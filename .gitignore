@@ -1,1 +1,3 @@
-/.quarto/
+\.quarto
+\.Rproj\.user
+quarto_website.Rproj
