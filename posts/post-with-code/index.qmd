@@ -1,0 +1,13 @@
+---
+title: "Post With Code"
+author: "Yousuf Ali"
+date: "2024-05-29"
+categories: [news, code, analysis]
+image: "image.jpg"
+---
+
+This is a post with executable code.
+
+```{r}
+1 + 1
+```

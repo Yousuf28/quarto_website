@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Yousuf Ali",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Hi, My name is Yousuf Ali. I am an ORISE Fellow at FDA.\nThanks for visiting my blog."
+  },
+  {
+    "objectID": "posts.html",
+    "href": "posts.html",
+    "title": "Blog",
+    "section": "",
+    "text": "R Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "posts/basic-R/index.html",
+    "href": "posts/basic-R/index.html",
+    "title": "R Basic with dplyr and data.table",
+    "section": "",
+    "text": "library(data.table)\ndt &lt;- mtcars\ndata.table::setDT(dt)\n\n\n\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(magrittr)\ndf &lt;- mtcars\n\n\nbaseR &lt;- aggregate(. ~ cyl, data = df, FUN = length)\nbaseR &lt;- baseR[c(\"cyl\", \"mpg\")]  # Adjust column names if needed\nprint(baseR)\n\n  cyl mpg\n1   4  11\n2   6   7\n3   8  14"
+  },
+  {
+    "objectID": "posts/basic-R/index.html#bind",
+    "href": "posts/basic-R/index.html#bind",
+    "title": "R Basic with dplyr and data.table",
+    "section": "bind",
+    "text": "bind\n\n\n\nx &lt;- mtcars[1:5, 1:4]\ny &lt;- mtcars[6:10,1:4]\nx\n\n     mpg   cyl  disp    hp\n   &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;\n1:  21.0     6   160   110\n2:  21.0     6   160   110\n3:  22.8     4   108    93\n4:  21.4     6   258   110\n5:  18.7     8   360   175\n\n\n\ny\n\n     mpg   cyl  disp    hp\n   &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;\n1:  18.1     6 225.0   105\n2:  14.3     8 360.0   245\n3:  24.4     4 146.7    62\n4:  22.8     4 140.8    95\n5:  19.2     6 167.6   123\n\n\n\n\n\nx_dt &lt;- data.table::as.data.table(x)\ny_dt &lt;- data.table::as.data.table(y)\n\n\n\n\ndata.table::rbindlist(list(x_dt,y_dt))\n\n      mpg   cyl  disp    hp\n    &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;\n 1:  21.0     6 160.0   110\n 2:  21.0     6 160.0   110\n 3:  22.8     4 108.0    93\n 4:  21.4     6 258.0   110\n 5:  18.7     8 360.0   175\n 6:  18.1     6 225.0   105\n 7:  14.3     8 360.0   245\n 8:  24.4     4 146.7    62\n 9:  22.8     4 140.8    95\n10:  19.2     6 167.6   123\n\n# data.table::rbindlist(list(x_dt,y_dt), \n                        # use.names = FALSE,\n                          # fill = FALSE,\n#                       idcol = 'id')\n\n\ndplyr::bind_rows(x,y)\n\n      mpg   cyl  disp    hp\n    &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;\n 1:  21.0     6 160.0   110\n 2:  21.0     6 160.0   110\n 3:  22.8     4 108.0    93\n 4:  21.4     6 258.0   110\n 5:  18.7     8 360.0   175\n 6:  18.1     6 225.0   105\n 7:  14.3     8 360.0   245\n 8:  24.4     4 146.7    62\n 9:  22.8     4 140.8    95\n10:  19.2     6 167.6   123\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nlibrary(reticulate)\n\ndf_py &lt;- reticulate::r_to_py(df)\n\n\n\n\nimport pandas as pd\n\n\ndf_python = r.df_py\n\n# Print the Python dataframe\nprint(df_python)\n\n     mpg  cyl   disp     hp  drat     wt   qsec   vs   am  gear  carb\n0   21.0  6.0  160.0  110.0  3.90  2.620  16.46  0.0  1.0   4.0   4.0\n1   21.0  6.0  160.0  110.0  3.90  2.875  17.02  0.0  1.0   4.0   4.0\n2   22.8  4.0  108.0   93.0  3.85  2.320  18.61  1.0  1.0   4.0   1.0\n3   21.4  6.0  258.0  110.0  3.08  3.215  19.44  1.0  0.0   3.0   1.0\n4   18.7  8.0  360.0  175.0  3.15  3.440  17.02  0.0  0.0   3.0   2.0\n5   18.1  6.0  225.0  105.0  2.76  3.460  20.22  1.0  0.0   3.0   1.0\n6   14.3  8.0  360.0  245.0  3.21  3.570  15.84  0.0  0.0   3.0   4.0\n7   24.4  4.0  146.7   62.0  3.69  3.190  20.00  1.0  0.0   4.0   2.0\n8   22.8  4.0  140.8   95.0  3.92  3.150  22.90  1.0  0.0   4.0   2.0\n9   19.2  6.0  167.6  123.0  3.92  3.440  18.30  1.0  0.0   4.0   4.0\n10  17.8  6.0  167.6  123.0  3.92  3.440  18.90  1.0  0.0   4.0   4.0\n11  16.4  8.0  275.8  180.0  3.07  4.070  17.40  0.0  0.0   3.0   3.0\n12  17.3  8.0  275.8  180.0  3.07  3.730  17.60  0.0  0.0   3.0   3.0\n13  15.2  8.0  275.8  180.0  3.07  3.780  18.00  0.0  0.0   3.0   3.0\n14  10.4  8.0  472.0  205.0  2.93  5.250  17.98  0.0  0.0   3.0   4.0\n15  10.4  8.0  460.0  215.0  3.00  5.424  17.82  0.0  0.0   3.0   4.0\n16  14.7  8.0  440.0  230.0  3.23  5.345  17.42  0.0  0.0   3.0   4.0\n17  32.4  4.0   78.7   66.0  4.08  2.200  19.47  1.0  1.0   4.0   1.0\n18  30.4  4.0   75.7   52.0  4.93  1.615  18.52  1.0  1.0   4.0   2.0\n19  33.9  4.0   71.1   65.0  4.22  1.835  19.90  1.0  1.0   4.0   1.0\n20  21.5  4.0  120.1   97.0  3.70  2.465  20.01  1.0  0.0   3.0   1.0\n21  15.5  8.0  318.0  150.0  2.76  3.520  16.87  0.0  0.0   3.0   2.0\n22  15.2  8.0  304.0  150.0  3.15  3.435  17.30  0.0  0.0   3.0   2.0\n23  13.3  8.0  350.0  245.0  3.73  3.840  15.41  0.0  0.0   3.0   4.0\n24  19.2  8.0  400.0  175.0  3.08  3.845  17.05  0.0  0.0   3.0   2.0\n25  27.3  4.0   79.0   66.0  4.08  1.935  18.90  1.0  1.0   4.0   1.0\n26  26.0  4.0  120.3   91.0  4.43  2.140  16.70  0.0  1.0   5.0   2.0\n27  30.4  4.0   95.1  113.0  3.77  1.513  16.90  1.0  1.0   5.0   2.0\n28  15.8  8.0  351.0  264.0  4.22  3.170  14.50  0.0  1.0   5.0   4.0\n29  19.7  6.0  145.0  175.0  3.62  2.770  15.50  0.0  1.0   5.0   6.0\n30  15.0  8.0  301.0  335.0  3.54  3.570  14.60  0.0  1.0   5.0   8.0\n31  21.4  4.0  121.0  109.0  4.11  2.780  18.60  1.0  1.0   4.0   2.0\n\n\n\nresult_pandas = df_python.groupby('cyl').size().reset_index(name='n')\nprint(result_pandas)\n\n   cyl   n\n0  4.0  11\n1  6.0   7\n2  8.0  14"
+  }
+]
