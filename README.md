@@ -2,24 +2,22 @@
 
 A fast, optimized Quarto website hosted on GitHub Pages with custom domain support.
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Prerequisites](#-prerequisites)
-- [Project Structure](#-project-structure)
-- [How Quarto Blog Posts Work](#-how-quarto-blog-posts-work)
-- [Adding a New Blog Post](#-adding-a-new-blog-post)
-- [Rendering the Website](#-rendering-the-website)
-- [Previewing the Website](#-previewing-the-website)
-- [Building with Optimizations](#-building-with-optimizations)
-- [Website Maintenance](#-website-maintenance)
-- [Deploying to GitHub Pages](#-deploying-to-github-pages)
-- [Performance Optimizations](#-performance-optimizations)
-- [Troubleshooting](#-troubleshooting)
-- [Quick Reference](#-quick-reference)
+- [Prerequisites](#prerequisites)
+- [How Quarto Websites Work](#how-quarto-websites-work)
+- [How This Website Works](#how-this-website-works)
+- [Adding a New Blog Post](#adding-a-new-blog-post)
+- [Rendering and Previewing](#rendering-and-previewing)
+- [Building with Optimizations](#building-with-optimizations)
+- [Website Maintenance](#website-maintenance)
+- [Deploying to GitHub Pages](#deploying-to-github-pages)
+- [Troubleshooting](#troubleshooting)
+- [Quick Reference](#quick-reference)
 
-## 🔧 Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have:
+Before working with this website, ensure you have:
 
 1. **Quarto** installed ([Installation Guide](https://quarto.org/docs/get-started/))
    ```bash
@@ -37,7 +35,40 @@ Before you begin, ensure you have:
    pip install beautifulsoup4
    ```
 
-## 📁 Project Structure
+## How Quarto Websites Work
+
+Quarto is a publishing system that converts markdown files (`.qmd`) into HTML websites. Here's how it works:
+
+### Basic Concepts
+
+1. **Source Files**: Quarto uses `.qmd` files (Quarto Markdown) that contain:
+   - YAML frontmatter (metadata like title, author, date)
+   - Markdown content
+   - Code blocks that can be executed
+
+2. **Rendering**: The `quarto render` command converts `.qmd` files into HTML files that browsers can display.
+
+3. **Project Structure**: A Quarto website project has:
+   - `_quarto.yml` - Configuration file
+   - Source files (`.qmd`) - Content files
+   - Output directory - Where HTML files are generated
+
+4. **Automatic Discovery**: Quarto automatically finds and processes files based on the project structure, so you don't need to manually register pages.
+
+### Blog System
+
+Quarto's blog system works by:
+- Scanning a `posts/` directory for subdirectories
+- Each subdirectory represents a blog post
+- Each post must have an `index.qmd` file
+- Quarto automatically generates a blog listing page
+- Posts are discovered automatically - no manual registration needed
+
+## How This Website Works
+
+This website uses Quarto's automatic blog listing system. Here's the specific structure:
+
+### Project Structure
 
 ```
 quarto_website/
@@ -50,34 +81,30 @@ quarto_website/
 │   ├── welcome/         # Example post
 │   │   ├── index.qmd
 │   │   └── thumbnail.jpg
-│   └── your-post/       # Your new posts go here
+│   └── your-post/       # New posts go here
 ├── build.sh             # Build script (render + optimize)
 ├── optimize_html.py     # HTML optimization script
 ├── docs/                # Output directory (deployed to GitHub Pages)
 └── styles.css           # Custom CSS
 ```
 
-## 📖 How Quarto Blog Posts Work
+### Key Components
 
-### Understanding the Structure
-
-Your Quarto website uses an **automatic blog listing system**. Here's how it works:
-
-1. **`posts.qmd`** - This is the blog listing page that automatically:
-   - Scans the `posts/` directory for all subdirectories
-   - Lists each post as a card with title, date, author, and categories
-   - Sorts posts by date (newest first) - configured in `posts.qmd`
-   - Shows categories for filtering
-
-2. **`posts/` directory** - Contains all your blog posts:
-   - Each post is a **subdirectory** (e.g., `posts/welcome/`, `posts/bash-scheduler/`)
-   - Each subdirectory must contain an `index.qmd` file
-   - Quarto automatically discovers posts - **no manual registration needed**
-
-3. **`_quarto.yml`** - Main configuration:
+1. **`_quarto.yml`** - Main configuration:
    - Defines the navbar (Home, About, Blog/posts)
    - Sets output directory to `docs/`
    - Configures theme and styling
+
+2. **`posts.qmd`** - Blog listing page that automatically:
+   - Scans the `posts/` directory for all subdirectories
+   - Lists each post as a card with title, date, author, and categories
+   - Sorts posts by date (newest first)
+   - Shows categories for filtering
+
+3. **`posts/` directory** - Contains all blog posts:
+   - Each post is a subdirectory (e.g., `posts/welcome/`, `posts/bash-scheduler/`)
+   - Each subdirectory must contain an `index.qmd` file
+   - Quarto automatically discovers posts - no manual registration needed
 
 4. **`posts/_metadata.yml`** - Default settings for all posts:
    - Applies `title-block-banner: true` to all posts
@@ -86,19 +113,21 @@ Your Quarto website uses an **automatic blog listing system**. Here's how it wor
 ### How Posts Are Discovered
 
 Quarto automatically:
-- ✅ Finds all subdirectories in `posts/`
-- ✅ Reads the `index.qmd` file in each subdirectory
-- ✅ Extracts metadata (title, date, author, categories) from YAML frontmatter
-- ✅ Generates the blog listing page
-- ✅ Creates individual post pages at `posts/your-post-name/`
+- Finds all subdirectories in `posts/`
+- Reads the `index.qmd` file in each subdirectory
+- Extracts metadata (title, date, author, categories) from YAML frontmatter
+- Generates the blog listing page
+- Creates individual post pages at `posts/your-post-name/`
 
 **You don't need to edit `posts.qmd` or any configuration file** - just add a new directory with `index.qmd` and Quarto handles the rest!
 
-## ✍️ Adding a New Blog Post
+## Adding a New Blog Post
+
+To add a new blog post to this website, follow these steps:
 
 ### Step 1: Create Post Directory
 
-Create a new directory for your post inside the `posts/` folder:
+Create a new directory for the post inside the `posts/` folder:
 
 ```bash
 mkdir posts/your-post-title
@@ -112,7 +141,7 @@ mkdir posts/your-post-title
 
 ### Step 2: Create the Post File
 
-Create an `index.qmd` file in your new directory:
+Create an `index.qmd` file in the new directory:
 
 ```bash
 touch posts/your-post-title/index.qmd
@@ -120,9 +149,9 @@ touch posts/your-post-title/index.qmd
 
 **Important:** The file **must** be named `index.qmd` - this is how Quarto identifies it as a post.
 
-### Step 3: Write Your Post
+### Step 3: Write the Post
 
-Open `posts/your-post-title/index.qmd` and add your content:
+Open `posts/your-post-title/index.qmd` and add the content with YAML frontmatter:
 
 ```yaml
 ---
@@ -149,23 +178,6 @@ def hello_world():
     print("Hello, World!")
 ```
 
-### Adding Images
-
-If you want to include images in your post:
-
-1. Place image files in your post directory:
-   ```bash
-   posts/your-post-title/
-   ├── index.qmd
-   ├── thumbnail.jpg      # For post listing
-   └── image1.png         # For post content
-   ```
-
-2. Reference them in your post:
-   ```markdown
-   ![](image1.png)
-   ```
-
 ### Post Metadata Options
 
 The YAML front matter supports these options:
@@ -177,7 +189,24 @@ The YAML front matter supports these options:
 - `image`: Path to thumbnail image (relative to post directory)
 - `draft`: Set to `true` to hide from listing (optional)
 
-### Example: Complete Post
+### Adding Images
+
+To include images in a post:
+
+1. Place image files in the post directory:
+   ```bash
+   posts/your-post-title/
+   ├── index.qmd
+   ├── thumbnail.jpg      # For post listing
+   └── image1.png         # For post content
+   ```
+
+2. Reference them in the post:
+   ```markdown
+   ![](image1.png)
+   ```
+
+### Complete Post Example
 
 ```yaml
 ---
@@ -205,13 +234,45 @@ mean(x)
 R is a powerful language for data analysis!
 ```
 
-## 🎨 Rendering the Website
+## Rendering and Previewing
 
-Rendering converts your Quarto (`.qmd`) files into HTML that can be viewed in a browser. There are different ways to render depending on your needs.
+Understanding the difference between rendering and previewing is important for working with this website.
 
-### Method 1: Basic Render (Quick Development)
+### What is Rendering?
 
-For quick previews during development when you don't need optimizations:
+**Rendering** converts Quarto (`.qmd`) files into HTML files that can be viewed in a browser. It's a one-time conversion process that creates static HTML files in the `docs/` directory.
+
+**Key points:**
+- Creates actual HTML files
+- Files are saved to disk
+- Required before deploying
+- Can be done with or without optimizations
+
+### What is Previewing?
+
+**Previewing** starts a local web server to view the website in a browser. It can work with rendered files or render on-the-fly.
+
+**Key points:**
+- Starts a local server (doesn't create files by default)
+- Shows the site in a browser
+- Can auto-reload on changes
+- Useful for development and testing
+
+### The Difference
+
+| Rendering | Previewing |
+|-----------|------------|
+| Converts `.qmd` to HTML files | Shows website in browser |
+| Creates files on disk | Runs a local server |
+| Required for deployment | Optional for development |
+| One-time process | Continuous (while server runs) |
+| Can include optimizations | Usually shows unoptimized version |
+
+### Rendering Methods
+
+#### Method 1: Basic Render (Quick Development)
+
+For quick previews during development:
 
 ```bash
 quarto render
@@ -228,7 +289,7 @@ quarto render
 - Testing markdown formatting
 - Development work
 
-### Method 2: Render Specific Files
+#### Method 2: Render Specific Files
 
 Render only specific files instead of the entire site:
 
@@ -248,19 +309,9 @@ quarto render posts.qmd
 - Faster iteration during development
 - Fixing issues in specific pages
 
-### Method 3: Production Build (Recommended)
+#### Method 3: Render with Options
 
-For production-ready output with optimizations:
-
-```bash
-./build.sh
-```
-
-This runs both rendering and optimization. See [Building with Optimizations](#-building-with-optimizations) for details.
-
-### Render Options
-
-You can customize rendering behavior:
+Customize rendering behavior:
 
 ```bash
 # Render and watch for changes (auto-render on file changes)
@@ -273,21 +324,11 @@ quarto render --to html
 quarto render --cache
 ```
 
-### Render Output
+### Previewing Methods
 
-After rendering:
-- All HTML files are in the `docs/` directory
-- Individual post pages: `docs/posts/your-post-name/index.html`
-- Blog listing: `docs/posts.html`
-- Homepage: `docs/index.html`
+#### Method 1: Quarto Preview (Recommended)
 
-## 👀 Previewing the Website
-
-After rendering, you'll want to preview your site locally before deploying. Here are several methods:
-
-### Method 1: Quarto Preview (Recommended)
-
-The easiest way to preview your site with live reload:
+The easiest way to preview with live reload:
 
 ```bash
 quarto preview
@@ -295,15 +336,16 @@ quarto preview
 
 **What it does:**
 - Starts a local web server
-- Automatically opens your browser
+- Automatically opens the browser
 - Watches for file changes and auto-reloads
 - Shows the site at `http://localhost:4200` (default port)
+- Can render on-the-fly (no need to render first)
 
 **Advantages:**
-- ✅ Automatic browser refresh on changes
-- ✅ No need to manually render first
-- ✅ Integrated with Quarto workflow
-- ✅ Shows exactly how the site will look
+- Automatic browser refresh on changes
+- No need to manually render first
+- Integrated with Quarto workflow
+- Shows exactly how the site will look
 
 **Usage:**
 ```bash
@@ -319,7 +361,7 @@ quarto preview --render
 
 **To stop:** Press `Ctrl+C` in the terminal
 
-### Method 2: Python HTTP Server
+#### Method 2: Python HTTP Server
 
 If you've already rendered and want a simple static server:
 
@@ -328,16 +370,16 @@ cd docs
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000` in your browser.
+Then open `http://localhost:8000` in the browser.
 
 **Advantages:**
-- ✅ Simple and lightweight
-- ✅ Good for testing final output
-- ✅ No dependencies beyond Python
+- Simple and lightweight
+- Good for testing final output
+- No dependencies beyond Python
 
 **To stop:** Press `Ctrl+C` in the terminal
 
-### Method 3: Live Server (VS Code Extension)
+#### Method 3: Live Server (VS Code Extension)
 
 If you use VS Code:
 
@@ -346,47 +388,49 @@ If you use VS Code:
 3. Select "Open with Live Server"
 
 **Advantages:**
-- ✅ Integrated with your editor
-- ✅ Auto-reload on file changes
-- ✅ Easy to use
+- Integrated with the editor
+- Auto-reload on file changes
+- Easy to use
 
-### Method 4: Other Local Servers
+### Recommended Workflow
 
-You can use any local web server:
+**For adding a new post:**
 
-```bash
-# Using Node.js http-server (if installed)
-npx http-server docs -p 8000
-
-# Using PHP (if installed)
-cd docs && php -S localhost:8000
-```
-
-### Preview Workflow
-
-**Recommended workflow for adding a new post:**
-
-1. Create and edit your post: `posts/my-post/index.qmd`
-2. Start preview: `quarto preview`
+1. Create and edit the post: `posts/my-post/index.qmd`
+2. Start preview: `quarto preview` (renders automatically)
 3. Make changes and see them update automatically
 4. When satisfied, build for production: `./build.sh`
 5. Preview final output: `cd docs && python3 -m http.server 8000`
 6. Deploy when ready
 
+**For quick checks:**
+
+1. Render: `quarto render` (fast, no optimizations)
+2. Preview: `cd docs && python3 -m http.server 8000`
+
+**For production:**
+
+1. Build: `./build.sh` (render + optimize)
+2. Preview: `cd docs && python3 -m http.server 8000`
+3. Deploy
+
 ### Preview Tips
 
-- **Check all pages:** Navigate through Home, About, Blog listing, and individual posts
-- **Test responsive design:** Resize your browser window
-- **Check images:** Ensure all images load correctly
-- **Test links:** Click all internal and external links
-- **Check categories:** Verify categories appear and filter correctly
-- **Mobile preview:** Use browser DevTools to test mobile view
+When previewing, do the following:
+- Check all pages: Navigate through Home, About, Blog listing, and individual posts
+- Test responsive design: Resize the browser window
+- Check images: Ensure all images load correctly
+- Test links: Click all internal and external links
+- Check categories: Verify categories appear and filter correctly
+- Mobile preview: Use browser DevTools to test mobile view
 
-## 🚀 Building with Optimizations
+## Building with Optimizations
 
-**Always use this for production builds!**
+For production deployment, always use the optimized build process.
 
-The `build.sh` script renders your site and applies performance optimizations:
+### Production Build
+
+The `build.sh` script renders the site and applies performance optimizations:
 
 ```bash
 ./build.sh
@@ -415,9 +459,22 @@ Optimized files are written to the `docs/` directory, ready for deployment.
 
 **Important:** Always use `./build.sh` before deploying to production. The optimizations improve page load speed and user experience.
 
-## 🔧 Website Maintenance
+### Performance Optimizations Included
+
+This website includes automatic performance optimizations:
+
+- **Script deferral**: Non-critical scripts load asynchronously
+- **CSS preloading**: Critical CSS loads early
+- **Resource hints**: Preconnect for external resources
+- **Optimized HTML**: Better parsing and rendering
+
+See `PERFORMANCE_OPTIMIZATION.md` for detailed information.
+
+## Website Maintenance
 
 ### Regular Workflow
+
+Follow these steps to maintain the website:
 
 1. **Add/Edit Posts**: Create or modify posts in `posts/` directory
 2. **Preview Changes**: Use `quarto preview` to check locally
@@ -451,16 +508,18 @@ posts/
 
 ### Updating Existing Posts
 
-To edit an existing post:
+To edit an existing post, follow these steps:
+
 1. Navigate to `posts/post-name/index.qmd`
-2. Make your changes
+2. Make the changes
 3. Preview: `quarto preview` (optional)
 4. Rebuild: `./build.sh`
-5. Commit and push changes
+5. Commit and push the changes
 
 ### Deleting Posts
 
-To remove a post:
+To remove a post, follow these steps:
+
 1. Delete the entire post directory: `rm -rf posts/post-name/`
 2. Rebuild: `./build.sh`
 3. Commit the deletion
@@ -468,28 +527,28 @@ To remove a post:
 ### Managing Categories
 
 Categories are defined in each post's YAML frontmatter. To add a new category:
-- Just use it in a post: `categories: [new-category]`
+- Use it in a post: `categories: [new-category]`
 - It will automatically appear in the category filter on the blog page
 
 ### Common Tasks
 
 **Change blog page title:**
-- Edit `posts.qmd` → change `title: "Blog"`
+- Edit `posts.qmd` and change `title: "Blog"`
 
 **Change post sorting:**
-- Edit `posts.qmd` → change `sort: "date desc"` to `sort: "date asc"` for oldest first
+- Edit `posts.qmd` and change `sort: "date desc"` to `sort: "date asc"` for oldest first
 
 **Change default post settings:**
 - Edit `posts/_metadata.yml` (affects all posts)
 
 **Add a new page to navbar:**
-- Edit `_quarto.yml` → add to `navbar.right` section
+- Edit `_quarto.yml` and add to `navbar.right` section
 
-## 📤 Deploying to GitHub Pages
+## Deploying to GitHub Pages
 
 ### Initial Setup
 
-1. **Push your code to GitHub**:
+1. **Push the code to GitHub**:
    ```bash
    git add .
    git commit -m "Initial Quarto website setup"
@@ -497,15 +556,15 @@ Categories are defined in each post's YAML frontmatter. To add a new category:
    ```
 
 2. **Configure GitHub Pages**:
-   - Go to your repository → Settings → Pages
+   - Go to the repository → Settings → Pages
    - Source: Deploy from a branch
-   - Branch: `main` (or your default branch)
+   - Branch: `main` (or the default branch)
    - Folder: `/docs`
    - Click Save
 
 ### After Each Build
 
-1. **Build your site**:
+1. **Build the site**:
    ```bash
    ./build.sh
    ```
@@ -517,13 +576,13 @@ Categories are defined in each post's YAML frontmatter. To add a new category:
    git push origin main
    ```
 
-GitHub Pages will automatically deploy your changes (usually within 1-2 minutes).
+GitHub Pages will automatically deploy the changes (usually within 1-2 minutes).
 
 ### Custom Domain
 
 If you have a custom domain:
 
-1. Add a `CNAME` file in the `docs/` directory with your domain:
+1. Add a `CNAME` file in the `docs/` directory with the domain:
    ```
    yourdomain.com
    ```
@@ -532,18 +591,7 @@ If you have a custom domain:
 
 3. The `CNAME` file is already included in your repo
 
-## ⚡ Performance Optimizations
-
-This website includes automatic performance optimizations:
-
-- ✅ **Script deferral**: Non-critical scripts load asynchronously
-- ✅ **CSS preloading**: Critical CSS loads early
-- ✅ **Resource hints**: Preconnect for external resources
-- ✅ **Optimized HTML**: Better parsing and rendering
-
-See `PERFORMANCE_OPTIMIZATION.md` for detailed information.
-
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Build Script Fails
 
@@ -574,13 +622,13 @@ See `PERFORMANCE_OPTIMIZATION.md` for detailed information.
 - Ensure Quarto is properly installed: `quarto --version`
 
 **Changes not showing in preview:**
-- Save your files (unsaved changes won't be detected)
+- Save files (unsaved changes won't be detected)
 - Try stopping and restarting preview server
 - Clear browser cache
 
 ### Posts Not Appearing
 
-- Ensure your post has a valid `date` in YYYY-MM-DD format
+- Ensure the post has a valid `date` in YYYY-MM-DD format
 - Check that `draft: true` is not set in post metadata
 - Verify the post directory name doesn't have spaces or special characters
 - Rebuild the site: `./build.sh`
@@ -599,7 +647,7 @@ See `PERFORMANCE_OPTIMIZATION.md` for detailed information.
 - Check browser DevTools Network tab for loading issues
 - Verify optimizations were applied (check HTML source for deferred scripts)
 
-## 📝 Quick Reference
+## Quick Reference
 
 ### Complete Workflow: Adding a New Post
 
@@ -608,7 +656,7 @@ See `PERFORMANCE_OPTIMIZATION.md` for detailed information.
 mkdir posts/my-new-post
 
 # 2. Create and edit the post file
-# Edit posts/my-new-post/index.qmd with your content
+# Edit posts/my-new-post/index.qmd with the content
 
 # 3. Preview while editing (optional but recommended)
 quarto preview
@@ -675,7 +723,7 @@ cd docs && python3 -m http.server 8000
 
 ### Post Template
 
-When creating a new post, use this template:
+When creating a new post, use the following template:
 
 ```yaml
 ---
@@ -696,4 +744,4 @@ Use Markdown for formatting:
 
 ---
 
-**Happy Blogging! 🎉**
+**Happy Blogging!**
