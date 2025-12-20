@@ -33,6 +33,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
@@ -62,7 +63,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -105,30 +106,49 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#resume" id="toc-resume" class="nav-link active" data-scroll-target="#resume">Resume</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<div class="quarto-about-jolla">
- <header id="title-block-header" class="quarto-title-block default">
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">About</h1>
 </div>
+
+
+
 <div class="quarto-title-meta">
+
+    
+  
+    
   </div>
-</header><main class="content" id="quarto-document-content">
-<p>Hi, My name is Yousuf Ali. I am an ORISE Fellow at FDA.<br>
-Thanks for visiting my blog.</p>
+  
+
+</header>
+
+<p>I am a programmer with a Ph.D.&nbsp;in Pharmaceutical Sciences. My background combines pharmaceutical research with advanced computational and data science skills. My expertise spans multiple programming languages including R, Python, SQL, and Bash, along with modern development workflows such as Git, GitHub, CI/CD, AWS. I specialize in CDISC SEND data standards for nonclinical toxicology studies, computational toxicology, statistical analysis, and machine learning. I have experience developing R packages, building interactive R shiny web applications, and creating data pipelines for regulatory science applications. I work at the intersection of pharmaceutical sciences, data science, and software development, applying computational approaches to solve complex problems in biomedical and life science fields.</p>
+<section id="resume" class="level2">
+<h2 class="anchored" data-anchor-id="resume">Resume</h2>
+<p>Download: <a href="resume.pdf">Resume PDF</a></p>
+<iframe src="resume.pdf" width="100%" height="800px" style="border: 1px solid #ccc;">
+<p>
+Your browser does not support PDFs. <a href="resume.pdf">Download the resume</a> instead.
+</p>
+</iframe>
 
 
-</main> 
-  <hr class="about-sep">
-   <div class="about-links">
-  <a href="https://github.com/Yousuf28" class="about-link">
-    <i class="bi bi-github"></i>
-     <span class="about-link-text">Github</span>
-  </a>
-</div>
-</div>
- <!-- /main -->
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -149,6 +169,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
   toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
   const clipboard = new window.ClipboardJS('.code-copy-button', {
     target: function(trigger) {
       return trigger.previousElementSibling;

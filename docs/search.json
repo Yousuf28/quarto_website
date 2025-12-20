@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "Welcome",
     "section": "",
-    "text": "This is a Quarto website."
+    "text": "This is my personal blog where I share insights, tutorials, and experiences related to data science, programming, and computational toxicology. Here you will find posts covering topics like R programming, data analysis, automation, and various technical topics I encounter in my work."
   },
   {
     "objectID": "posts.html",
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler\n\n\n\n\n\n\n\nbash\n\n\nlinux\n\n\nautomation\n\n\ntutorial\n\n\n\n\n\n\n\n\n\n\n\nDec 19, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nR Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
+    "text": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler\n\n\n\n\n\n\n\nbash\n\n\nlinux\n\n\nautomation\n\n\ntutorial\n\n\n\n\n\n\n\n\n\n\n\nDec 19, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n\n\nR Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -25,7 +25,7 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Hi, My name is Yousuf Ali. I am an ORISE Fellow at FDA.\nThanks for visiting my blog."
+    "text": "I am a programmer with a Ph.D. in Pharmaceutical Sciences. My background combines pharmaceutical research with advanced computational and data science skills. My expertise spans multiple programming languages including R, Python, SQL, and Bash, along with modern development workflows such as Git, GitHub, CI/CD, AWS. I specialize in CDISC SEND data standards for nonclinical toxicology studies, computational toxicology, statistical analysis, and machine learning. I have experience developing R packages, building interactive R shiny web applications, and creating data pipelines for regulatory science applications. I work at the intersection of pharmaceutical sciences, data science, and software development, applying computational approaches to solve complex problems in biomedical and life science fields."
   },
   {
     "objectID": "posts/basic-R/index.html",
@@ -159,5 +159,75 @@
     "title": "Yousuf Ali",
     "section": "🔄 Running Every Hour at HH:00",
     "text": "🔄 Running Every Hour at HH:00\nif [[ \"$(date +%M)\" == \"00\" ]]; then"
+  },
+  {
+    "objectID": "index.html#blog-posts",
+    "href": "index.html#blog-posts",
+    "title": "Welcome",
+    "section": "Blog Posts",
+    "text": "Blog Posts\n\nRunning Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler - December 19, 2025\nR Basic with dplyr and data.table - May 29, 2024\n\nVisit the Blog page to see all posts with filtering options."
+  },
+  {
+    "objectID": "index.html#connect",
+    "href": "index.html#connect",
+    "title": "Welcome",
+    "section": "Connect",
+    "text": "Connect\n\nGitHub\nLinkedIn \nYouTube \n\n\n\nNote: All views expressed on this website are my own and do not represent the views of my employer. This content is provided for informational and educational purposes only."
+  },
+  {
+    "objectID": "about.html#summary",
+    "href": "about.html#summary",
+    "title": "About",
+    "section": "Summary",
+    "text": "Summary\nPharmaceutical Scientist by training with a strong aptitude for learning new skills to solve data science problems in the biomedical/life science fields. Bringing exceptional Pharmacology Research, CDISC SEND Data Standards, Programming, Statistical Analysis, Machine Learning, and Deep Learning skills."
+  },
+  {
+    "objectID": "about.html#professional-experience",
+    "href": "about.html#professional-experience",
+    "title": "About",
+    "section": "Professional Experience",
+    "text": "Professional Experience\n\nStaff Fellow (Pharmacologist)\nFood and Drug Administration (FDA) | Silver Spring, MD\nNovember 2024 - Present\n\nContributed to SENDsanitizer development and synthetic data generation for FDA’s Predictive Modeling of Hepatotoxicity in Animals App-a-thon\nBuilt an R Shiny web application for tracking and visualizing animal usage patterns in regulatory studies\nDeveloped comprehensive automation for the Pharm/Tox Study Report Finder app\nDeveloped a TD50 Shiny application that automates carcinogenic potency calculations\n\n\n\nORISE Postdoctoral Fellow\nFood and Drug Administration (FDA) | Silver Spring, MD\nMarch 2020 - September 2024\n\nDeveloped an R package (sendigR) in collaboration with BioCelerate for analyzing and visualizing CDISC SEND/nonclinical historical control data\nDeveloped an R Shiny web app, toxSummary, for summarization and visualization of nonclinical/toxicological studies\nDeveloped a Bayesian Model to incorporate historical control data for assessing treatment effect in nonclinical study\n\n\n\nResearch Assistant\nTexas Tech University Health Sciences Center | Amarillo, TX\nJanuary 2015 - February 2020\n\nDesigned and conducted research projects on cytokine-stimulated iNOS expression and ACSL in brain ischemic models\nInvestigated HNF-4⍺ role in iNOS expression in bEnd.3 and C6 astrocytoma cells\n\n\n\nProduct Development Officer\nACI Limited (Pharmaceuticals) | Narayangonj, Dhaka, Bangladesh\nJanuary 2015 - February 2020\n\nPerformed physical and chemical tests for product development, analytical method development, and validation\nConducted stability analysis including accelerated stability and real-time studies"
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "About",
+    "section": "Education",
+    "text": "Education\nPh.D. in Pharmaceutical Sciences\nTexas Tech University Health Sciences Center, Amarillo, TX\n2020\nMasters in Pharmaceutical Chemistry\nUniversity of Dhaka, Dhaka, Bangladesh\n2010\nBachelor of Pharmacy\nUniversity of Dhaka, Dhaka, Bangladesh\n2008"
+  },
+  {
+    "objectID": "about.html#skills",
+    "href": "about.html#skills",
+    "title": "About",
+    "section": "Skills",
+    "text": "Skills\nProgramming & Data Science: - R, R Shiny App, R Package Development, Python, SQL, AWS, Git/GitHub, GitHub CI/CD, Docker, Linux/Unix shell scripting, HTML, CSS, JavaScript - Data Wrangling and Visualization (dplyr, data.table, ggplot2, D3) - Machine Learning, Deep Learning, Statistical Analysis\nSoftware: - SEND explorer, Janus Nonclinical, GraphPad Prism, ImageJ, SPSS, ChemDraw, Endnote, Microsoft Office\nDomain Expertise: - CDISC SEND Data Standards, Computational Toxicology, Pharmacology Research, Molecular Biology"
+  },
+  {
+    "objectID": "about.html#publications",
+    "href": "about.html#publications",
+    "title": "About",
+    "section": "Publications",
+    "text": "Publications\n\nSnyder, K., C. M. Sabbir Ahmed, Md Yousuf Ali, S. Butler, et al. 2024. “sendigR: An R Package to Leverage the Value of CDISC SEND Datasets for Cross-Study Analysis.” Frontiers in Toxicology 6:1392686.\nCarfagna, Mark A., Cm Sabbir Ahmed, Susan Butler, et al., and Md Yousuf Ali. 2024. “Cross Study Analyses of SEND Data: Toxicity Profile Classification.” Toxicological Sciences 200(2):277–86.\nSyeda Sadia Ameen, S.R.J., Md Yousuf Ali. Evaluation of The Anti-Inflammatory and Antipyretic Activities of The Plant Alpinia Nigra (Family: Zingiberaceae). World Journal of Pharmaceutical Research 3, 164-170 (2014)."
+  },
+  {
+    "objectID": "about.html#certifications",
+    "href": "about.html#certifications",
+    "title": "About",
+    "section": "Certifications",
+    "text": "Certifications\n\nToxicology for Pharmaceutical and Regulatory Scientists (2022)\nCDISC Data Standards (2020)\nBioconductor for Genomic Data Science - Coursera (2019)\nDeep Learning Nanodegree - Udacity (2019)\nData Scientist Nanodegree - Udacity (2019)\nData Analyst Nanodegree - Udacity (2018)\nStatistics with R Specialization - Duke University - Coursera (2018)"
+  },
+  {
+    "objectID": "about.html#md-yousuf-ali",
+    "href": "about.html#md-yousuf-ali",
+    "title": "About",
+    "section": "Md Yousuf Ali",
+    "text": "Md Yousuf Ali\nPharmaceutical Scientist | Data Scientist | Computational Toxicologist\nWebsite: yousufali.net | GitHub: github.com/Yousuf28"
+  },
+  {
+    "objectID": "about.html#resume",
+    "href": "about.html#resume",
+    "title": "About",
+    "section": "Resume",
+    "text": "Resume\nDownload: Resume PDF\n\n<p>\nYour browser does not support PDFs. <a href=\"resume.pdf\">Download the resume</a> instead.\n</p>"
   }
 ]

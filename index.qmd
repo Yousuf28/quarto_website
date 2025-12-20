@@ -2,5 +2,21 @@
 title: "Welcome"
 ---
 
-This is a Quarto website.
+This is my personal blog where I share insights, tutorials, and experiences related to data science, programming, and computational toxicology. Here you will find posts covering topics like R programming, data analysis, automation, and various technical topics I encounter in my work.
 
+## Blog Posts
+
+- [Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler](posts/bash-scheduler/) - December 19, 2025
+- [R Basic with dplyr and data.table](posts/basic-R/) - May 29, 2024
+
+Visit the [Blog](posts.qmd) page to see all posts with filtering options.
+
+## Connect
+
+- [GitHub](https://github.com/Yousuf28)
+- [LinkedIn](https://www.linkedin.com/in/yousuf--ali/) <!-- Update with your LinkedIn URL -->
+- [YouTube](https://www.youtube.com/@yousufali_/videos) <!-- Update with your YouTube channel URL -->
+
+---
+
+> **Note:** All views expressed on this website are my own and do not represent the views of my employer. This content is provided for informational and educational purposes only.

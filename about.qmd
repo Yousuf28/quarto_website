@@ -1,12 +1,23 @@
 ---
 title: "About"
-about:
-  template: jolla
-  links:
-    - icon: github
-      text: Github
-      href: https://github.com/Yousuf28
 ---
 
-Hi, My name is Yousuf Ali. I am an ORISE Fellow at FDA.  
-Thanks for visiting my blog.
+I am a programmer with a Ph.D. in Pharmaceutical Sciences. My background
+combines pharmaceutical research with advanced computational and data science
+skills. My expertise spans multiple programming languages including R, Python,
+SQL, and Bash, along with modern development workflows such as Git, GitHub,
+CI/CD, AWS.  I specialize in CDISC SEND data standards for nonclinical
+toxicology studies, computational toxicology, statistical analysis, and machine
+learning.  I have experience developing R packages, building interactive R shiny
+web applications, and creating data pipelines for regulatory science
+applications.  I work at the intersection of pharmaceutical sciences, data
+science, and software development, applying computational approaches to solve
+complex problems in biomedical and life science fields.
+
+## Resume
+
+Download: [Resume PDF](resume.pdf)
+
+<iframe src="resume.pdf" width="100%" height="800px" style="border: 1px solid #ccc;">
+  <p>Your browser does not support PDFs. <a href="resume.pdf">Download the resume</a> instead.</p>
+</iframe>
