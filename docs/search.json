@@ -11,7 +11,7 @@
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "R Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
+    "text": "Post With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nR Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -47,5 +47,12 @@
     "title": "Welcome To My Blog",
     "section": "",
     "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "PERFORMANCE_OPTIMIZATION.html",
+    "href": "PERFORMANCE_OPTIMIZATION.html",
+    "title": "Yousuf Ali",
+    "section": "",
+    "text": "This document explains the performance optimizations applied to your Quarto website.\n\n\nTo build and optimize your website:\n./build.sh\nOr manually:\nquarto render\npython3 optimize_html.py\n\n\n\nThe optimize_html.py script automatically applies the following optimizations to all generated HTML files:\n\n\n\nNon-critical scripts are moved to the end of the <body> tag with defer attribute\nCritical scripts (quarto.js, bootstrap.min.js) remain in <head> but are deferred\nThis prevents scripts from blocking HTML parsing and rendering\n\n\n\n\n\nCritical CSS files (Bootstrap, Bootstrap Icons, Syntax Highlighting) are preloaded\nBrowsers can start downloading CSS earlier, improving First Contentful Paint\n\n\n\n\n\npreconnect hints added for external resources (e.g., GitHub)\nReduces DNS lookup and connection time for external resources\n\n\n\n\n\nScripts are ordered to ensure dependencies load correctly\nCritical scripts load before dependent scripts\n\n\n\n\n\nThe optimization script includes performance monitoring that logs: - Page load start time - DOMContentLoaded event timing - Individual script load times - Resource load times and sizes - Window load completion time\nLogs are written to .cursor/debug.log in NDJSON format.\n\n\n\nAfter optimization, you should see: - Faster First Contentful Paint (FCP): CSS preloading and script deferral allow content to render sooner - Faster Time to Interactive (TTI): Scripts don’t block rendering - Better Lighthouse scores: Improved performance metrics - Reduced blocking time: Scripts load asynchronously without blocking the main thread\n\n\n\n\nBefore optimization: Run quarto render and test your site\nAfter optimization: Run ./build.sh and test again\nCompare: Use browser DevTools Network tab or Lighthouse to compare load times\n\n\n\n\nAfter running the build script, commit and push the optimized files in the docs/ directory:\ngit add docs/\ngit commit -m \"Optimize HTML for performance\"\ngit push\n\n\n\nIf scripts don’t work after optimization: 1. Ensure scripts are loaded in the correct order 2. Check browser console for errors 3. Verify that deferred scripts don’t have dependencies on non-deferred scripts\n\n\n\n\noptimize_html.py: Post-processing script for HTML optimization\nbuild.sh: Build script that runs Quarto render + optimization\n_quarto.yml: Updated with performance-related settings"
   }
 ]

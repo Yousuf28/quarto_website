@@ -18,6 +18,9 @@ format:
     theme: solar
     css: styles.css
     toc: true
+    # Performance optimizations
+    code-fold: false  # Disable code folding to reduce JS overhead
+    code-tools: false  # Disable code tools if not needed
 
 
 
