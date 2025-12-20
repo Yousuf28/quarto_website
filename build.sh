@@ -11,3 +11,6 @@ python3 optimize_html.py
 
 echo "Build complete! Optimized files are in the docs/ directory."
 
+
+
+

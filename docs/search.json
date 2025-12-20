@@ -11,7 +11,7 @@
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nR Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
+    "text": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler\n\n\n\n\n\n\n\nbash\n\n\nlinux\n\n\nautomation\n\n\ntutorial\n\n\n\n\n\n\n\n\n\n\n\nDec 19, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nR Basic with dplyr and data.table\n\n\n\n\n\n\n\ncode\n\n\nR\n\n\ndata.table\n\n\ndplyr\n\n\n\n\n\n\n\n\n\n\n\nMay 29, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMay 26, 2024\n\n\nYousuf Ali\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -54,5 +54,110 @@
     "title": "Yousuf Ali",
     "section": "",
     "text": "This document explains the performance optimizations applied to your Quarto website.\n\n\nTo build and optimize your website:\n./build.sh\nOr manually:\nquarto render\npython3 optimize_html.py\n\n\n\nThe optimize_html.py script automatically applies the following optimizations to all generated HTML files:\n\n\n\nNon-critical scripts are moved to the end of the <body> tag with defer attribute\nCritical scripts (quarto.js, bootstrap.min.js) remain in <head> but are deferred\nThis prevents scripts from blocking HTML parsing and rendering\n\n\n\n\n\nCritical CSS files (Bootstrap, Bootstrap Icons, Syntax Highlighting) are preloaded\nBrowsers can start downloading CSS earlier, improving First Contentful Paint\n\n\n\n\n\npreconnect hints added for external resources (e.g., GitHub)\nReduces DNS lookup and connection time for external resources\n\n\n\n\n\nScripts are ordered to ensure dependencies load correctly\nCritical scripts load before dependent scripts\n\n\n\n\n\nThe optimization script includes performance monitoring that logs: - Page load start time - DOMContentLoaded event timing - Individual script load times - Resource load times and sizes - Window load completion time\nLogs are written to .cursor/debug.log in NDJSON format.\n\n\n\nAfter optimization, you should see: - Faster First Contentful Paint (FCP): CSS preloading and script deferral allow content to render sooner - Faster Time to Interactive (TTI): Scripts don’t block rendering - Better Lighthouse scores: Improved performance metrics - Reduced blocking time: Scripts load asynchronously without blocking the main thread\n\n\n\n\nBefore optimization: Run quarto render and test your site\nAfter optimization: Run ./build.sh and test again\nCompare: Use browser DevTools Network tab or Lighthouse to compare load times\n\n\n\n\nAfter running the build script, commit and push the optimized files in the docs/ directory:\ngit add docs/\ngit commit -m \"Optimize HTML for performance\"\ngit push\n\n\n\nIf scripts don’t work after optimization: 1. Ensure scripts are loaded in the correct order 2. Check browser console for errors 3. Verify that deferred scripts don’t have dependencies on non-deferred scripts\n\n\n\n\noptimize_html.py: Post-processing script for HTML optimization\nbuild.sh: Build script that runs Quarto render + optimization\n_quarto.yml: Updated with performance-related settings"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html",
+    "href": "posts/bash-scheduler/index.html",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "",
+    "text": "A complete guide with examples, time customization, and process management\nSometimes you need to automate a task on a Linux server — but crontab isn’t available. This is common on restricted systems, containers, or environments where cron is not installed or disabled.\nWith a simple Bash loop, you can create your own lightweight scheduler that behaves similarly to cron.\nThis guide covers:\n\nHow to build a Bash-based scheduler\nHow to change the schedule time and day\nExample scripts\nDirectory structure\nHow to start, stop, and restart the scheduler\nLogging\nNotes about server timezone differences\n\n\nNote: The Linux server time may be different from your local timezone. Always verify the server time with:\ndate\nAdjust the scheduled time accordingly.\n\n\nDirectory Structure\nyour-project/\n│\n├── master.sh\n├── run_schedule.sh\n└── scheduler.log        # created after first run\n\n\nExample Task Script (master.sh)\nThis script is what you want to run on schedule.\n#!/usr/bin/env bash\necho \"Master script executed at $(date)\" >> master.log\n\n\nThe Scheduler Script (run_schedule.sh)\nThis script continuously checks the date and time. It runs master.sh every Saturday at 06:00.\n#!/usr/bin/env bash\ncd \"$(dirname \"$0\")\"\n\nSCRIPT=\"./master.sh\"\n\nwhile true; do\n    DOW=$(date +%u)      # Day of week (1–7, Monday=1)\n    TIME=$(date +%H:%M)  # Time in 24-hour format (HH:MM)\n\n    if [[ \"$DOW\" == \"6\" && \"$TIME\" == \"06:00\" ]]; then\n        echo \"Running master.sh at $(date)\"\n        bash \"$SCRIPT\"\n        sleep 60  # Prevent running twice in the same minute\n    fi\n\n    sleep 20\ndone\n\n\nHow to Change the Schedule (DOW & TIME)\nThe scheduler uses two conditions:\n\nDOW → Day of week\nTIME → Exact time (HH:MM)\n\n\nChanging the Day of the Week (DOW)\nThe command date +%u returns:\n\n\n\nValue\nDay\n\n\n\n\n1\nMonday\n\n\n2\nTuesday\n\n\n3\nWednesday\n\n\n4\nThursday\n\n\n5\nFriday\n\n\n6\nSaturday\n\n\n7\nSunday\n\n\n\n\nExamples\nRun every Monday at 06:00:\nif [[ \"$DOW\" == \"1\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Wednesday at 06:00:\nif [[ \"$DOW\" == \"3\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Sunday at 06:00:\nif [[ \"$DOW\" == \"7\" && \"$TIME\" == \"06:00\" ]]; then\n\n\n\nChanging the Time (TIME)\nTime is checked using:\nTIME=$(date +%H:%M)\nThis is 24-hour format.\n\nExamples\nRun at 07:30 AM:\nif [[ \"$TIME\" == \"07:30\" ]]; then\nRun at 11:45 PM (23:45):\nif [[ \"$TIME\" == \"23:45\" ]]; then\nRun at midnight:\nif [[ \"$TIME\" == \"00:00\" ]]; then\n\n\n\nRunning Twice in a Day\nExample: Run at 06:00 and 18:00 on Saturday:\nif [[ \"$DOW\" == \"6\" && ( \"$TIME\" == \"06:00\" || \"$TIME\" == \"18:00\" ) ]]; then\n\n\nRunning Every Day at a Specific Time\nRemove the DOW check:\nif [[ \"$TIME\" == \"06:00\" ]]; then\n\n\nRunning Every Hour at HH:00\nif [[ \"$(date +%M)\" == \"00\" ]]; then\n\n\n\nRunning the Scheduler in Background\nGive execute permissions:\nchmod +x master.sh\nchmod +x run_schedule.sh\nStart it using nohup so it survives logout:\nnohup ./run_schedule.sh > scheduler.log 2>&1 &\n\n\nChecking If the Scheduler Is Running\npgrep -fl run_schedule.sh\nOr:\nps aux | grep run_schedule.sh\n\n\nStopping (Killing) the Scheduler\nKill by name:\npkill -f run_schedule.sh\nOr kill by process ID:\nps aux | grep run_schedule.sh\nkill <PID>\nForce kill:\nkill -9 <PID>\n\n\nRestarting the Scheduler\npkill -f run_schedule.sh\nnohup ./run_schedule.sh > scheduler.log 2>&1 &\n\n\nViewing Logs\ntail -f scheduler.log\n\n\nFinal Thoughts\nThis method lets you schedule tasks without relying on cron. By adjusting the DOW and TIME variables, you can create almost any schedule you want — daily tasks, weekly tasks, specific hours, or multiple run times."
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#directory-structure",
+    "href": "posts/bash-scheduler/index.html#directory-structure",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Directory Structure",
+    "text": "Directory Structure\nyour-project/\n│\n├── master.sh\n├── run_schedule.sh\n└── scheduler.log        # created after first run"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#example-task-script-master.sh",
+    "href": "posts/bash-scheduler/index.html#example-task-script-master.sh",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Example Task Script (master.sh)",
+    "text": "Example Task Script (master.sh)\nThis script is what you want to run on schedule.\n#!/usr/bin/env bash\necho \"Master script executed at $(date)\" >> master.log"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#the-scheduler-script-run_schedule.sh",
+    "href": "posts/bash-scheduler/index.html#the-scheduler-script-run_schedule.sh",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "The Scheduler Script (run_schedule.sh)",
+    "text": "The Scheduler Script (run_schedule.sh)\nThis script continuously checks the date and time. It runs master.sh every Saturday at 06:00.\n#!/usr/bin/env bash\ncd \"$(dirname \"$0\")\"\n\nSCRIPT=\"./master.sh\"\n\nwhile true; do\n    DOW=$(date +%u)      # Day of week (1–7, Monday=1)\n    TIME=$(date +%H:%M)  # Time in 24-hour format (HH:MM)\n\n    if [[ \"$DOW\" == \"6\" && \"$TIME\" == \"06:00\" ]]; then\n        echo \"Running master.sh at $(date)\"\n        bash \"$SCRIPT\"\n        sleep 60  # Prevent running twice in the same minute\n    fi\n\n    sleep 20\ndone"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#changing-the-day-of-the-week-dow",
+    "href": "posts/bash-scheduler/index.html#changing-the-day-of-the-week-dow",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Changing the Day of the Week (DOW)",
+    "text": "Changing the Day of the Week (DOW)\nThe command date +%u returns:\n\n\n\nValue\nDay\n\n\n\n\n1\nMonday\n\n\n2\nTuesday\n\n\n3\nWednesday\n\n\n4\nThursday\n\n\n5\nFriday\n\n\n6\nSaturday\n\n\n7\nSunday\n\n\n\n\nExamples\nRun every Monday at 06:00:\nif [[ \"$DOW\" == \"1\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Wednesday at 06:00:\nif [[ \"$DOW\" == \"3\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Sunday at 06:00:\nif [[ \"$DOW\" == \"7\" && \"$TIME\" == \"06:00\" ]]; then"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#changing-the-time-time",
+    "href": "posts/bash-scheduler/index.html#changing-the-time-time",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Changing the Time (TIME)",
+    "text": "Changing the Time (TIME)\nTime is checked using:\nTIME=$(date +%H:%M)\nThis is 24-hour format.\n\nExamples\nRun at 07:30 AM:\nif [[ \"$TIME\" == \"07:30\" ]]; then\nRun at 11:45 PM (23:45):\nif [[ \"$TIME\" == \"23:45\" ]]; then\nRun at midnight:\nif [[ \"$TIME\" == \"00:00\" ]]; then"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#running-twice-in-a-day",
+    "href": "posts/bash-scheduler/index.html#running-twice-in-a-day",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Running Twice in a Day",
+    "text": "Running Twice in a Day\nExample: Run at 06:00 and 18:00 on Saturday:\nif [[ \"$DOW\" == \"6\" && ( \"$TIME\" == \"06:00\" || \"$TIME\" == \"18:00\" ) ]]; then"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#running-every-day-at-a-specific-time",
+    "href": "posts/bash-scheduler/index.html#running-every-day-at-a-specific-time",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Running Every Day at a Specific Time",
+    "text": "Running Every Day at a Specific Time\nRemove the DOW check:\nif [[ \"$TIME\" == \"06:00\" ]]; then"
+  },
+  {
+    "objectID": "posts/bash-scheduler/index.html#running-every-hour-at-hh00",
+    "href": "posts/bash-scheduler/index.html#running-every-hour-at-hh00",
+    "title": "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler",
+    "section": "Running Every Hour at HH:00",
+    "text": "Running Every Hour at HH:00\nif [[ \"$(date +%M)\" == \"00\" ]]; then"
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Yousuf Ali",
+    "section": "",
+    "text": "A complete guide with examples, time customization, and process management\nSometimes you need to automate a task on a Linux server — but crontab isn’t available. This is common on restricted systems, containers, or environments where cron is not installed or disabled.\nWith a simple Bash loop, you can create your own lightweight scheduler that behaves similarly to cron.\nThis guide covers:\n\nHow to build a Bash-based scheduler\nHow to change the schedule time and day\nExample scripts\nDirectory structure\nHow to start, stop, and restart the scheduler\nLogging\nNotes about server timezone differences\n\n\nNote: The Linux server time may be different from your local timezone. Always verify the server time with:\ndate\nAdjust the scheduled time accordingly.\n\n\n\nyour-project/\n│\n├── master.sh\n├── run_schedule.sh\n└── scheduler.log        # created after first run\n\n\n\nThis script is what you want to run on schedule.\n#!/usr/bin/env bash\necho \"Master script executed at $(date)\" >> master.log\n\n\n\nThis script continuously checks the date and time. It runs master.sh every Saturday at 06:00.\n#!/usr/bin/env bash\ncd \"$(dirname \"$0\")\"\n\nSCRIPT=\"./master.sh\"\n\nwhile true; do\n    DOW=$(date +%u)      # Day of week (1–7, Monday=1)\n    TIME=$(date +%H:%M)  # Time in 24-hour format (HH:MM)\n\n    if [[ \"$DOW\" == \"6\" && \"$TIME\" == \"06:00\" ]]; then\n        echo \"Running master.sh at $(date)\"\n        bash \"$SCRIPT\"\n        sleep 60  # Prevent running twice in the same minute\n    fi\n\n    sleep 20\ndone"
+  },
+  {
+    "objectID": "schedule.html#changing-the-day-of-the-week-dow",
+    "href": "schedule.html#changing-the-day-of-the-week-dow",
+    "title": "Yousuf Ali",
+    "section": "📅 Changing the Day of the Week (DOW)",
+    "text": "📅 Changing the Day of the Week (DOW)\nThe command date +%u returns:\n\n\n\nValue\nDay\n\n\n\n\n1\nMonday\n\n\n2\nTuesday\n\n\n3\nWednesday\n\n\n4\nThursday\n\n\n5\nFriday\n\n\n6\nSaturday\n\n\n7\nSunday\n\n\n\n\nExamples\nRun every Monday at 06:00:\nif [[ \"$DOW\" == \"1\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Wednesday at 06:00:\nif [[ \"$DOW\" == \"3\" && \"$TIME\" == \"06:00\" ]]; then\nRun every Sunday at 06:00:\nif [[ \"$DOW\" == \"7\" && \"$TIME\" == \"06:00\" ]]; then"
+  },
+  {
+    "objectID": "schedule.html#changing-the-time-time",
+    "href": "schedule.html#changing-the-time-time",
+    "title": "Yousuf Ali",
+    "section": "⏰ Changing the Time (TIME)",
+    "text": "⏰ Changing the Time (TIME)\nTime is checked using:\nTIME=$(date +%H:%M)\nThis is 24-hour format.\n\nExamples\nRun at 07:30 AM:\nif [[ \"$TIME\" == \"07:30\" ]]; then\nRun at 11:45 PM (23:45):\nif [[ \"$TIME\" == \"23:45\" ]]; then\nRun at midnight:\nif [[ \"$TIME\" == \"00:00\" ]]; then"
+  },
+  {
+    "objectID": "schedule.html#running-twice-in-a-day",
+    "href": "schedule.html#running-twice-in-a-day",
+    "title": "Yousuf Ali",
+    "section": "🧩 Running Twice in a Day",
+    "text": "🧩 Running Twice in a Day\nExample: Run at 06:00 and 18:00 on Saturday:\nif [[ \"$DOW\" == \"6\" && ( \"$TIME\" == \"06:00\" || \"$TIME\" == \"18:00\" ) ]]; then"
+  },
+  {
+    "objectID": "schedule.html#running-every-day-at-a-specific-time",
+    "href": "schedule.html#running-every-day-at-a-specific-time",
+    "title": "Yousuf Ali",
+    "section": "🔁 Running Every Day at a Specific Time",
+    "text": "🔁 Running Every Day at a Specific Time\nRemove the DOW check:\nif [[ \"$TIME\" == \"06:00\" ]]; then"
+  },
+  {
+    "objectID": "schedule.html#running-every-hour-at-hh00",
+    "href": "schedule.html#running-every-hour-at-hh00",
+    "title": "Yousuf Ali",
+    "section": "🔄 Running Every Hour at HH:00",
+    "text": "🔄 Running Every Hour at HH:00\nif [[ \"$(date +%M)\" == \"00\" ]]; then"
   }
 ]

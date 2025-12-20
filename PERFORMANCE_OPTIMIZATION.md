@@ -86,3 +86,6 @@ If scripts don't work after optimization:
 - `build.sh`: Build script that runs Quarto render + optimization
 - `_quarto.yml`: Updated with performance-related settings
 
+
+
+

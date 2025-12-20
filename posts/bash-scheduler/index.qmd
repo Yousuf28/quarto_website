@@ -1,0 +1,251 @@
+---
+title: "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler"
+author: "Yousuf Ali"
+date: "2024-12-19"
+categories: [bash, linux, automation, tutorial]
+---
+
+*A complete guide with examples, time customization, and process management*
+
+Sometimes you need to automate a task on a Linux server — but **crontab isn't available**. This is common on restricted systems, containers, or environments where cron is not installed or disabled.
+
+With a simple Bash loop, you can create your own lightweight scheduler that behaves similarly to cron.
+
+This guide covers:
+
+* How to build a Bash-based scheduler
+* How to change the schedule time and day
+* Example scripts
+* Directory structure
+* How to start, stop, and restart the scheduler
+* Logging
+* Notes about server timezone differences
+
+
+> **Note:**
+> The **Linux server time may be different from your local timezone**. Always verify the server time with:
+>
+> ```bash
+> date
+> ```
+>
+> Adjust the scheduled time accordingly.
+
+
+### Directory Structure
+
+```
+your-project/
+│
+├── master.sh
+├── run_schedule.sh
+└── scheduler.log        # created after first run
+```
+
+
+### Example Task Script (`master.sh`)
+
+This script is what you want to run on schedule.
+
+```bash
+#!/usr/bin/env bash
+echo "Master script executed at $(date)" >> master.log
+```
+
+
+### The Scheduler Script (`run_schedule.sh`)
+
+This script continuously checks the date and time.
+It runs `master.sh` every **Saturday at 06:00**.
+
+```bash
+#!/usr/bin/env bash
+cd "$(dirname "$0")"
+
+SCRIPT="./master.sh"
+
+while true; do
+    DOW=$(date +%u)      # Day of week (1–7, Monday=1)
+    TIME=$(date +%H:%M)  # Time in 24-hour format (HH:MM)
+
+    if [[ "$DOW" == "6" && "$TIME" == "06:00" ]]; then
+        echo "Running master.sh at $(date)"
+        bash "$SCRIPT"
+        sleep 60  # Prevent running twice in the same minute
+    fi
+
+    sleep 20
+done
+```
+
+
+# How to Change the Schedule (DOW & TIME)
+
+The scheduler uses two conditions:
+
+* **DOW** → Day of week
+* **TIME** → Exact time (HH:MM)
+
+
+### Changing the Day of the Week (DOW)
+
+The command `date +%u` returns:
+
+| Value | Day       |
+| ----- | --------- |
+| 1     | Monday    |
+| 2     | Tuesday   |
+| 3     | Wednesday |
+| 4     | Thursday  |
+| 5     | Friday    |
+| 6     | Saturday  |
+| 7     | Sunday    |
+
+#### Examples
+
+**Run every Monday at 06:00:**
+
+```bash
+if [[ "$DOW" == "1" && "$TIME" == "06:00" ]]; then
+```
+
+**Run every Wednesday at 06:00:**
+
+```bash
+if [[ "$DOW" == "3" && "$TIME" == "06:00" ]]; then
+```
+
+**Run every Sunday at 06:00:**
+
+```bash
+if [[ "$DOW" == "7" && "$TIME" == "06:00" ]]; then
+```
+
+
+### Changing the Time (TIME)
+
+Time is checked using:
+
+```bash
+TIME=$(date +%H:%M)
+```
+
+This is 24-hour format.
+
+#### Examples
+
+**Run at 07:30 AM:**
+
+```bash
+if [[ "$TIME" == "07:30" ]]; then
+```
+
+**Run at 11:45 PM (23:45):**
+
+```bash
+if [[ "$TIME" == "23:45" ]]; then
+```
+
+**Run at midnight:**
+
+```bash
+if [[ "$TIME" == "00:00" ]]; then
+```
+
+
+### Running Twice in a Day
+
+Example: Run at 06:00 and 18:00 on Saturday:
+
+```bash
+if [[ "$DOW" == "6" && ( "$TIME" == "06:00" || "$TIME" == "18:00" ) ]]; then
+```
+
+
+### Running Every Day at a Specific Time
+
+Remove the DOW check:
+
+```bash
+if [[ "$TIME" == "06:00" ]]; then
+```
+
+
+### Running Every Hour at HH:00
+
+```bash
+if [[ "$(date +%M)" == "00" ]]; then
+```
+
+
+# Running the Scheduler in Background
+
+Give execute permissions:
+
+```bash
+chmod +x master.sh
+chmod +x run_schedule.sh
+```
+
+Start it using `nohup` so it survives logout:
+
+```bash
+nohup ./run_schedule.sh > scheduler.log 2>&1 &
+```
+
+
+# Checking If the Scheduler Is Running
+
+```bash
+pgrep -fl run_schedule.sh
+```
+
+Or:
+
+```bash
+ps aux | grep run_schedule.sh
+```
+
+
+# Stopping (Killing) the Scheduler
+
+Kill by name:
+
+```bash
+pkill -f run_schedule.sh
+```
+
+Or kill by process ID:
+
+```bash
+ps aux | grep run_schedule.sh
+kill <PID>
+```
+
+Force kill:
+
+```bash
+kill -9 <PID>
+```
+
+
+# Restarting the Scheduler
+
+```bash
+pkill -f run_schedule.sh
+nohup ./run_schedule.sh > scheduler.log 2>&1 &
+```
+
+
+# Viewing Logs
+
+```bash
+tail -f scheduler.log
+```
+
+
+# Final Thoughts
+
+This method lets you schedule tasks without relying on cron.
+By adjusting the `DOW` and `TIME` variables, you can create almost any schedule you want — daily tasks, weekly tasks, specific hours, or multiple run times.
+
