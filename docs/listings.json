@@ -2,6 +2,7 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/RPlotViewerWeb/index.html",
       "/posts/bash-scheduler/index.html",
       "/posts/basic-R/index.html"
     ]

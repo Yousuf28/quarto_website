@@ -1,0 +1,768 @@
+---
+title: "Building a Web-Based R Plot Viewer with ASP.NET Core MVC"
+author: "Yousuf Ali"
+date: "2025-12-25"
+categories: [vibe-coding, ASP.NET, R]
+---
+
+
+## Introduction
+
+This blog post walks through the architecture and workflow of **RPlotViewerWeb**, a web application that generates statistical plots using R's ggplot2 library and displays them in a browser. We'll explore how ASP.NET Core MVC integrates with R, the file dependencies, and the complete request-response workflow.
+
+---
+
+## Table of Contents
+
+1. [Architecture Overview](#architecture-overview)
+2. [Project Structure](#project-structure)
+3. [Core Components](#core-components)
+4. [File Dependencies](#file-dependencies)
+5. [Complete Workflow](#complete-workflow)
+6. [How Everything Connects](#how-everything-connects)
+7. [Key Design Decisions](#key-design-decisions)
+8. [Conclusion](#conclusion)
+
+---
+
+## Architecture Overview
+
+The application follows the **Model-View-Controller (MVC)** pattern with an additional **Service Layer** for business logic. Here's the high-level architecture:
+
+```
+┌─────────────┐
+│   Browser   │
+│  (Client)   │
+└──────┬──────┘
+       │ HTTP Request
+       ▼
+┌─────────────────────────────────┐
+│   ASP.NET Core Web Server       │
+│  ┌──────────────────────────┐   │
+│  │   PlotController         │   │ ◄── Controller Layer
+│  └───────────┬──────────────┘   │
+│              │                  │
+│  ┌───────────▼──────────────┐   │
+│  │   RPlotService           │   │ ◄── Service Layer
+│  └───────────┬──────────────┘   │
+│              │                  │
+└──────────────┼──────────────────┘
+               │ Process.Start()
+               ▼
+┌─────────────────────────────────┐
+│   R-Portable                    │
+│  ┌──────────────────────────┐   │
+│  │   Rscript.exe            │   │ ◄── R Runtime
+│  └───────────┬──────────────┘   │
+│              │                  │
+│  ┌───────────▼──────────────┐   │
+│  │   create_plots.R         │   │ ◄── R Script
+│  └───────────┬──────────────┘   │
+│              │                  │
+└──────────────┼──────────────────┘
+               │ ggsave()
+               ▼
+┌─────────────────────────────────┐
+│   wwwroot/plots/                │
+│   plot_bar_20251225.png         │ ◄── Generated Plot
+└─────────────────────────────────┘
+```
+
+---
+
+## Project Structure
+
+```
+RPlotViewerWeb/
+├── Controllers/
+│   └── PlotController.cs          # Handles HTTP requests
+├── Services/
+│   └── RPlotService.cs            # R integration logic
+├── Views/
+│   ├── Plot/
+│   │   └── Index.cshtml           # Main UI
+│   └── Shared/
+│       └── _Layout.cshtml         # Layout template
+├── Resources/
+│   ├── R-Portable/
+│   │   └── bin/
+│   │       └── Rscript.exe        # R executable
+│   └── create_plots.R             # R plotting script
+├── wwwroot/
+│   ├── plots/                     # Generated plots (web-accessible)
+│   └── css/                       # Static assets
+├── Program.cs                     # Application entry point
+└── RPlotViewerWeb.csproj          # Project configuration
+```
+
+---
+
+## Core Components
+
+### 1. **Program.cs** - Application Entry Point
+
+**Purpose:** Configures and starts the web application.
+
+**Key Responsibilities:**
+- Registers services (dependency injection)
+- Configures middleware pipeline
+- Sets up routing
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Register services
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<RPlotService>();  // ← Service registration
+
+var app = builder.Build();
+
+// Middleware pipeline
+app.UseStaticFiles();      // Serves files from wwwroot/
+app.UseRouting();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Plot}/{action=Index}/{id?}");
+
+app.Run();
+```
+
+**Dependencies:**
+- `RPlotService.cs` (registered as singleton)
+- Controllers (auto-discovered)
+
+---
+
+### 2. **PlotController.cs** - Request Handler
+
+**Purpose:** Handles HTTP requests and coordinates between the view and service layer.
+
+**Key Methods:**
+
+#### `Index()` - Displays the UI
+```csharp
+public IActionResult Index()
+{
+    return View();  // Returns Views/Plot/Index.cshtml
+}
+```
+
+#### `Generate(string plotType)` - Generates plots
+```csharp
+[HttpPost]
+public async Task<IActionResult> Generate(string plotType)
+{
+    var logs = new StringBuilder();
+    
+    // Call service to generate plot
+    var plotUrl = await _plotService.GeneratePlotAsync(
+        plotType, 
+        msg => logs.AppendLine(msg)
+    );
+
+    // Return JSON response
+    return Json(new
+    {
+        success = true,
+        plotUrl = plotUrl,
+        logs = logs.ToString()
+    });
+}
+```
+
+**Dependencies:**
+- `RPlotService` (injected via constructor)
+- `Views/Plot/Index.cshtml` (rendered by Index action)
+
+---
+
+### 3. **RPlotService.cs** - R Integration Service
+
+**Purpose:** Manages R process execution and file handling.
+
+**Key Responsibilities:**
+1. Validates R installation paths
+2. Executes R scripts via `Process.Start()`
+3. Manages plot file storage
+4. Cleans up old plots
+
+**Constructor - Path Setup:**
+```csharp
+public RPlotService(IWebHostEnvironment environment)
+{
+    var resourcesPath = Path.Combine(
+        environment.ContentRootPath, "Resources");
+    
+    _rScriptPath = Path.Combine(
+        resourcesPath, "R-Portable", "bin", "Rscript.exe");
+    
+    _createPlotsScriptPath = Path.Combine(
+        resourcesPath, "create_plots.R");
+    
+    _outputDirectory = Path.Combine(
+        environment.WebRootPath, "plots");
+    
+    ValidatePaths();  // Ensures files exist
+}
+```
+
+**Plot Generation:**
+```csharp
+public async Task<string> GeneratePlotAsync(
+    string plotType, 
+    Action<string>? logCallback = null)
+{
+    var outputFileName = $"plot_{plotType}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+    var outputFilePath = Path.Combine(_outputDirectory, outputFileName);
+
+    // Configure R process
+    var processInfo = new ProcessStartInfo
+    {
+        FileName = _rScriptPath,
+        Arguments = $"\"{_createPlotsScriptPath}\" \"{plotType}\" \"{outputFilePath}\"",
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    // Execute R script
+    using var process = Process.Start(processInfo);
+    await process.WaitForExitAsync();
+
+    // Return web-accessible path
+    return $"/plots/{outputFileName}";
+}
+```
+
+**Dependencies:**
+- `Resources/R-Portable/bin/Rscript.exe`
+- `Resources/create_plots.R`
+- `wwwroot/plots/` (output directory)
+
+---
+
+### 4. **create_plots.R** - R Plotting Script
+
+**Purpose:** Creates ggplot2 visualizations and saves them as PNG files.
+
+**Workflow:**
+1. Receives command-line arguments (plot type, output path)
+2. Creates appropriate ggplot2 visualization
+3. Saves plot using `ggsave()`
+
+```r
+# Get arguments
+args <- commandArgs(trailingOnly = TRUE)
+plot_type <- args[1]
+output_file <- args[2]
+
+# Create plot based on type
+if (plot_type == "bar") {
+  p <- ggplot(data = mpg, aes(x = class, fill = class)) +
+    geom_bar() +
+    labs(title = "Count of Vehicles by Class") +
+    theme_minimal()
+} else if (plot_type == "boxplot") {
+  p <- ggplot(data = mpg, aes(x = class, y = hwy, fill = class)) +
+    geom_boxplot() +
+    labs(title = "Highway MPG by Vehicle Class") +
+    theme_minimal()
+}
+
+# Save plot
+ggsave(
+  filename = output_file,
+  plot = p,
+  width = 10,
+  height = 6,
+  dpi = 150
+)
+```
+
+**Dependencies:**
+- R ggplot2 package
+- mpg dataset (included in ggplot2)
+
+---
+
+### 5. **Index.cshtml** - User Interface
+
+**Purpose:** Provides the interactive web interface.
+
+**Key Features:**
+- Radio buttons for plot selection
+- Generate button with loading state
+- Plot display area
+- Collapsible log output
+
+**JavaScript Workflow:**
+```javascript
+generateBtn.onclick = async function() {
+    // 1. Get selected plot type
+    const plotType = document.querySelector('input[name="plotType"]:checked').value;
+    
+    // 2. Show loading state
+    generateBtn.disabled = true;
+    btnText.textContent = 'Generating...';
+    
+    // 3. Call server endpoint
+    const response = await fetch('/Plot/Generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `plotType=${plotType}`
+    });
+    
+    // 4. Display result
+    const result = await response.json();
+    if (result.success) {
+        plotArea.innerHTML = `<img src="${result.plotUrl}" class="img-fluid">`;
+    }
+    
+    // 5. Reset button state
+    generateBtn.disabled = false;
+    btnText.textContent = 'Generate Plot';
+};
+```
+
+**Dependencies:**
+- Bootstrap CSS (from CDN)
+- `/Plot/Generate` endpoint (PlotController)
+
+---
+
+## File Dependencies
+
+### Dependency Graph
+
+```
+Program.cs
+    ├── depends on → RPlotService.cs
+    └── depends on → PlotController.cs
+
+PlotController.cs
+    ├── depends on → RPlotService.cs
+    └── depends on → Views/Plot/Index.cshtml
+
+RPlotService.cs
+    ├── depends on → Resources/R-Portable/bin/Rscript.exe
+    ├── depends on → Resources/create_plots.R
+    └── depends on → wwwroot/plots/ (directory)
+
+Views/Plot/Index.cshtml
+    ├── depends on → /Plot/Generate (endpoint)
+    └── depends on → Bootstrap CSS (CDN)
+
+create_plots.R
+    ├── depends on → ggplot2 package
+    └── depends on → mpg dataset
+```
+
+### Runtime Dependencies
+
+**At Application Startup:**
+1. `Program.cs` loads
+2. `RPlotService` is instantiated (singleton)
+3. `RPlotService` validates paths to R and scripts
+4. Web server starts listening
+
+**At Request Time:**
+1. Browser requests `/Plot/Index`
+2. `PlotController.Index()` executes
+3. `Index.cshtml` is rendered and sent to browser
+
+**At Plot Generation:**
+1. JavaScript calls `/Plot/Generate`
+2. `PlotController.Generate()` executes
+3. `RPlotService.GeneratePlotAsync()` is called
+4. R process is spawned
+5. `create_plots.R` executes
+6. PNG file is saved to `wwwroot/plots/`
+7. File path is returned to browser
+8. Browser displays image
+
+---
+
+## Complete Workflow
+
+### Step-by-Step: Generating a Bar Chart
+
+#### **Step 1: User Opens Application**
+
+```
+Browser → GET http://localhost:5000/
+    ↓
+Program.cs (routing) → PlotController.Index()
+    ↓
+PlotController → return View()
+    ↓
+Views/Plot/Index.cshtml rendered
+    ↓
+HTML + JavaScript sent to browser
+```
+
+#### **Step 2: User Clicks "Generate Plot"**
+
+**Client-Side (JavaScript):**
+```javascript
+// 1. User clicks button
+generateBtn.onclick = async function() {
+    // 2. Prepare request
+    const plotType = 'bar';
+    
+    // 3. Send POST request
+    const response = await fetch('/Plot/Generate', {
+        method: 'POST',
+        body: `plotType=${plotType}`
+    });
+}
+```
+
+#### **Step 3: Server Processes Request**
+
+**Server-Side (C#):**
+```
+Browser → POST /Plot/Generate?plotType=bar
+    ↓
+PlotController.Generate("bar")
+    ↓
+RPlotService.GeneratePlotAsync("bar", logCallback)
+    ↓
+Process.Start(Rscript.exe)
+    ↓
+Command: Rscript.exe "create_plots.R" "bar" "C:\...\wwwroot\plots\plot_bar_20251225.png"
+```
+
+#### **Step 4: R Executes**
+
+**R Process:**
+```r
+# 1. R receives arguments
+args <- commandArgs(trailingOnly = TRUE)
+# args[1] = "bar"
+# args[2] = "C:\...\wwwroot\plots\plot_bar_20251225.png"
+
+# 2. Create plot
+p <- ggplot(data = mpg, aes(x = class, fill = class)) +
+    geom_bar() +
+    labs(title = "Count of Vehicles by Class")
+
+# 3. Save to file
+ggsave(filename = args[2], plot = p)
+```
+
+#### **Step 5: Response Returns to Browser**
+
+**Server Response:**
+```json
+{
+    "success": true,
+    "plotUrl": "/plots/plot_bar_20251225_143022.png",
+    "logs": "Generating bar plot...\n[R OUTPUT] Creating plot type: bar\n..."
+}
+```
+
+**Client-Side Display:**
+```javascript
+// 4. Receive response
+const result = await response.json();
+
+// 5. Display image
+plotArea.innerHTML = `<img src="${result.plotUrl}" class="img-fluid">`;
+// Browser requests: GET /plots/plot_bar_20251225_143022.png
+```
+
+#### **Step 6: Browser Displays Plot**
+
+```
+Browser → GET /plots/plot_bar_20251225_143022.png
+    ↓
+ASP.NET Core Static Files Middleware
+    ↓
+Serves file from wwwroot/plots/
+    ↓
+Image displayed in browser
+```
+
+---
+
+## How Everything Connects
+
+### Data Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Browser                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Index.cshtml (HTML + JavaScript)                    │   │
+│  │  - Radio buttons (bar/boxplot)                       │   │
+│  │  - Generate button                                   │   │
+│  │  - Plot display area                                 │   │
+│  └────────────┬─────────────────────────────────────────┘   │
+└───────────────┼─────────────────────────────────────────────┘
+                │
+                │ POST /Plot/Generate
+                │ plotType=bar
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   ASP.NET Core Server                       │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  PlotController.cs                                   │   │
+│  │  - Receives HTTP request                             │   │
+│  │  - Calls RPlotService                                │   │
+│  │  - Returns JSON response                             │   │
+│  └────────────┬─────────────────────────────────────────┘   │
+│               │                                             │
+│               │ GeneratePlotAsync("bar")                    │
+│               ▼                                             │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  RPlotService.cs                                     │   │
+│  │  - Builds command: Rscript.exe create_plots.R bar    │   │
+│  │  - Starts R process                                  │   │
+│  │  - Waits for completion                              │   │
+│  │  - Returns plot URL                                  │   │
+│  └────────────┬─────────────────────────────────────────┘   │
+└───────────────┼─────────────────────────────────────────────┘
+                │
+                │ Process.Start()
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    R-Portable                               │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Rscript.exe                                         │   │
+│  │  - Executes create_plots.R                           │   │
+│  └────────────┬─────────────────────────────────────────┘   │
+│               │                                             │
+│               │ source("create_plots.R")                    │
+│               ▼                                             │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  create_plots.R                                      │   │
+│  │  - Loads ggplot2                                     │   │
+│  │  - Creates bar chart                                 │   │
+│  │  - Saves PNG file                                    │   │
+│  └────────────┬─────────────────────────────────────────┘   │
+└───────────────┼─────────────────────────────────────────────┘
+                │
+                │ ggsave("plot_bar_20251225.png")
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    File System                              │
+│  wwwroot/plots/plot_bar_20251225_143022.png                 │
+└─────────────────────────────────────────────────────────────┘
+                │
+                │ GET /plots/plot_bar_20251225_143022.png
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Static Files Middleware                        │
+│  - Serves file from wwwroot/                                │
+└─────────────────────────────────────────────────────────────┘
+                │
+                │ PNG image data
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                        Browser                              │
+│  Displays plot image                                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Key Design Decisions
+
+### 1. **Why Singleton for RPlotService?**
+
+```csharp
+builder.Services.AddSingleton<RPlotService>();
+```
+
+**Reason:** Path validation happens once at startup, not on every request. This improves performance and catches configuration errors early.
+
+### 2. **Why Store Plots in wwwroot/?**
+
+```csharp
+_outputDirectory = Path.Combine(environment.WebRootPath, "plots");
+```
+
+**Reason:** Files in `wwwroot/` are automatically served by ASP.NET Core's static files middleware, making them accessible via URLs like `/plots/image.png`.
+
+### 3. **Why Use Process.Start() Instead of R.NET?**
+
+**Reason:** 
+- Simpler setup (no additional NuGet packages)
+- Works with portable R installation
+- Clear separation between .NET and R code
+- Easier to debug R scripts independently
+
+### 4. **Why Async/Await for R Execution?**
+
+```csharp
+public async Task<string> GeneratePlotAsync(...)
+{
+    await process.WaitForExitAsync();
+}
+```
+
+**Reason:** R plot generation can take several seconds. Async execution prevents blocking the web server thread, allowing it to handle other requests.
+
+### 5. **Why Standalone HTML in Index.cshtml?**
+
+**Reason:** Including Bootstrap from CDN and embedding JavaScript directly simplifies deployment and reduces dependencies on local static files.
+
+---
+
+## Security Considerations
+
+### 1. **Input Validation**
+
+```csharp
+// In create_plots.R
+if (plot_type == "bar") {
+    // ...
+} else if (plot_type == "boxplot") {
+    // ...
+} else {
+    stop(paste("Unknown plot type:", plot_type))
+}
+```
+
+Only predefined plot types are allowed, preventing command injection.
+
+### 2. **File Path Sanitization**
+
+```csharp
+var outputFileName = $"plot_{plotType}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+```
+
+Filename is generated server-side, not from user input.
+
+### 3. **Automatic Cleanup**
+
+```csharp
+public void CleanupOldPlots(int hoursOld = 1)
+{
+    // Deletes plots older than 1 hour
+}
+```
+
+Prevents disk space exhaustion from accumulated plot files.
+
+---
+
+## Extending the Application
+
+### Adding New Plot Types
+
+**1. Update create_plots.R:**
+```r
+## } else if (plot_type == "scatter") {
+  p <- ggplot(data = mpg, aes(x = displ, y = hwy)) +
+    geom_point() +
+    labs(title = "Engine Displacement vs Highway MPG")
+## }
+```
+
+**2. Update Index.cshtml:**
+```html
+<div class="form-check">
+    <input class="form-check-input" type="radio" name="plotType" id="scatterPlot" value="scatter">
+    <label class="form-check-label" for="scatterPlot">
+        📈 Scatter Plot - Displacement vs MPG
+    </label>
+</div>
+```
+
+No changes needed in C# code!
+
+### Adding Custom Datasets
+
+**1. Modify create_plots.R to accept data file:**
+```r
+args <- commandArgs(trailingOnly = TRUE)
+plot_type <- args[1]
+data_file <- args[2]
+output_file <- args[3]
+
+data <- read.csv(data_file)
+p <- ggplot(data, aes(x = x_col, y = y_col)) + geom_point()
+```
+
+**2. Update RPlotService:**
+```csharp
+Arguments = $"\"{_createPlotsScriptPath}\" \"{plotType}\" \"{dataPath}\" \"{outputFilePath}\""
+```
+
+---
+
+## Performance Optimization
+
+### 1. **Caching Generated Plots**
+
+```csharp
+private static Dictionary<string, string> _plotCache = new();
+
+public async Task<string> GeneratePlotAsync(string plotType, ...)
+{
+    var cacheKey = $"{plotType}_{DateTime.Now:yyyyMMdd}";
+    
+    if (_plotCache.ContainsKey(cacheKey))
+        return _plotCache[cacheKey];
+    
+    var plotUrl = await GenerateNewPlot(plotType);
+    _plotCache[cacheKey] = plotUrl;
+    
+    return plotUrl;
+}
+```
+
+### 2. **Background Processing**
+
+```csharp
+// Use IHostedService for cleanup
+public class PlotCleanupService : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            _plotService.CleanupOldPlots();
+            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+        }
+    }
+}
+```
+
+---
+
+## Conclusion
+
+The RPlotViewerWeb application demonstrates a clean separation of concerns:
+
+- **Program.cs**: Application configuration
+- **PlotController**: HTTP request handling
+- **RPlotService**: R integration and file management
+- **create_plots.R**: Statistical visualization logic
+- **Index.cshtml**: User interface
+
+This architecture makes the application:
+- ✅ **Maintainable**: Each component has a single responsibility
+- ✅ **Testable**: Services can be mocked and tested independently
+- ✅ **Extensible**: New plot types require minimal changes
+- ✅ **Scalable**: Async operations prevent thread blocking
+
+The key insight is treating R as an external service, communicating via process execution and file I/O, which provides a clean boundary between the .NET and R ecosystems.
+
+---
+
+## Additional Resources
+
+- [ASP.NET Core MVC Documentation](https://docs.microsoft.com/aspnet/core/mvc)
+- [ggplot2 Documentation](https://ggplot2.tidyverse.org/)
+- [Process Class in .NET](https://docs.microsoft.com/dotnet/api/system.diagnostics.process)
+
+---
+
+**GitHub Repository:**
+- [repo link](https://github.com/Yousuf28/RPlotViewerWeb)
+
+---
+

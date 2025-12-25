@@ -2,7 +2,7 @@
 title: "Running Scheduled Tasks Without Cron: A Simple Bash-Based Scheduler"
 author: "Yousuf Ali"
 date: "2024-12-19"
-categories: [bash, linux, automation, tutorial]
+categories: [bash, linux, automation]
 ---
 
 *A complete guide with examples, time customization, and process management*

@@ -2,7 +2,7 @@
 title: "R Basic with dplyr and data.table"
 author: "Yousuf Ali"
 date: "2024-05-29"
-categories: [code, R, data.table, dplyr]
+categories: [R, data.table, dplyr]
 format: html
 ---
 
