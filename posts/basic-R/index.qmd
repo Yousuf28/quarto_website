@@ -493,37 +493,3 @@ dplyr::bind_rows(x,y)
 
 ```
 
-```{r}
-library(reticulate)
-
-df_py <- reticulate::r_to_py(df)
-
-```
-
-:::
-
-
-```{python}
-import pandas as pd
-
-```
-
-
-
-```{python}
-
-
-df_python = r.df_py
-
-# Print the Python dataframe
-print(df_python)
-
-```
-
-
-
-```{python}
-result_pandas = df_python.groupby('cyl').size().reset_index(name='n')
-print(result_pandas)
-
-```

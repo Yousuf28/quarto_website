@@ -14,10 +14,10 @@ applications.  I work at the intersection of pharmaceutical sciences, data
 science, and software development, applying computational approaches to solve
 complex problems in biomedical and life science fields.
 
-## Resume
+<!-- ## Resume -->
 
-Download: [Resume PDF](resume.pdf)
+<!-- Download: [Resume PDF](resume.pdf) -->
 
-<iframe src="resume.pdf" width="100%" height="800px" style="border: 1px solid #ccc;">
-  <p>Your browser does not support PDFs. <a href="resume.pdf">Download the resume</a> instead.</p>
-</iframe>
+<!-- <iframe src="resume.pdf" width="100%" height="800px" style="border: 1px solid #ccc;"> -->
+<!--   <p>Your browser does not support PDFs. <a href="resume.pdf">Download the resume</a> instead.</p> -->
+<!-- </iframe> -->
