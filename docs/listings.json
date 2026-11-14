@@ -2,6 +2,7 @@
   {
     "listing": "/posts.html",
     "items": [
+      "/posts/swift-in-doomemacs/index.html",
       "/posts/RPlotViewerWeb/index.html",
       "/posts/bash-scheduler/index.html",
       "/posts/basic-R/index.html"
