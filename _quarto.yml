@@ -23,4 +23,6 @@ format:
     code-tools: false  # Disable code tools if not needed
 
 
+site:
+  custom-domain: yousufali.net
 
