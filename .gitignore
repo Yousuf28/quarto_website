@@ -3,3 +3,5 @@
 quarto_website.Rproj
 
 /.quarto/
+
+**/*.quarto_ipynb
