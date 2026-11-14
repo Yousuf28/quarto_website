@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - CNAME
 
 website:
   title: "Yousuf Ali"
@@ -22,7 +24,4 @@ format:
     code-fold: false  # Disable code folding to reduce JS overhead
     code-tools: false  # Disable code tools if not needed
 
-
-site:
-  custom-domain: yousufali.net
 
